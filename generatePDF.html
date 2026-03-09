@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate JSON Report</title>
+    <!-- Removed PDF-Lib and downloadjs CDNs since we don't need PDF generation -->
+    <!-- Removed Google APIs since we don't need Drive upload -->
+</head>
+<body>
+    <img src="Icon/GV.png" alt="Logo" class="logo" id="logo" title="Go to Login Page">
+    
+    <div class="json-generation-container">
+        <h1>JSON Generation</h1>
+        <div class="status-box">
+            <p id="generationStatus">Ready to generate JSON backup file...</p>
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="backBtn" onclick="window.location.href='signature.html'">Back (A)</button>
+            <button id="StartNewSession" onclick="startNewSession()">Start New Session</button>
+            <button id="generateJsonBtn" onclick="generateJsonFile()">Generate JSON Backup</button>
+        </div>
+        
+        <!-- JSON file info -->
+        <div id="jsonInfo" style="margin-top: 20px; display: none;">
+            <div style="padding: 15px; background-color: #d4edda; color: #155724; border-radius: 4px; border: 1px solid #c3e6cb;">
+                <strong>✓ JSON generated successfully!</strong>
+                <p id="jsonFileName" style="margin: 5px 0 0 0;"></p>
+                <p id="jsonFileSize" style="margin: 5px 0 0 0; font-size: 12px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="commonFunctions.js"></script>
+    <script src="generateJSON.js"></script>
+    <script>
+        // Function to handle back navigation
+        function goToBack() {
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.click();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            // Check if we're in an input field
+            const isInputField = event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA';
+            
+            // Only trigger shortcuts if not typing in an input field
+            if (!isInputField) {
+                if (event.key === 'a' || event.key === 'A' || event.keyCode === 65 || event.keyCode === 97) {
+                    event.preventDefault();
+                    goToBack();
+                }
+            }
+        });
+        
+        // Function to start new session
+        function startNewSession() {
+            const userConfirmed = confirm("All of the data in previous session will be permanently deleted to start a new session. Are you sure?");
+            if (userConfirmed) {
+                try {
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    console.log("All session data cleared");
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error("Failed to start new session:", error);
+                    alert("Failed to start new session. Please try again.");
+                }
+            }
+        }
+        
+        // Modified generateJsonFile function to show progress and info
+        async function generateJsonFile() {
+            const statusElement = document.getElementById('generationStatus');
+            const progressBar = document.getElementById('progressBar');
+            const jsonInfo = document.getElementById('jsonInfo');
+            const jsonFileName = document.getElementById('jsonFileName');
+            const jsonFileSize = document.getElementById('jsonFileSize');
+            const generateBtn = document.getElementById('generateJsonBtn');
+            
+            // Reset UI
+            statusElement.textContent = "Starting JSON generation...";
+            progressBar.style.width = '10%';
+            progressBar.style.backgroundColor = '#2196F3';
+            jsonInfo.style.display = 'none';
+            
+            // Disable button during process
+            if (generateBtn) {
+                generateBtn.disabled = true;
+                generateBtn.textContent = 'Generating...';
+            }
+            
+            try {
+                // Step 1: Load user data
+                statusElement.textContent = "Loading session data...";
+                progressBar.style.width = '30%';
+                
+                // Check if we have required data
+                const contractNo = localStorage.getItem('session_contractNo');
+                const rtuSerial = localStorage.getItem('session_rtuSerial');
+                
+                if (!contractNo || !rtuSerial) {
+                    throw new Error("Missing session data. Please complete the session first.");
+                }
+                
+                // Step 2: Generate JSON
+                statusElement.textContent = "Generating JSON backup...";
+                progressBar.style.width = '60%';
+                
+                // Call the existing function from generateJSON.js
+                if (typeof window.generateJsonFromLocalStorage === 'function') {
+                    const jsonContent = window.generateJsonFromLocalStorage();
+                    
+                    // Step 3: Create and download file
+                    statusElement.textContent = "Creating download file...";
+                    progressBar.style.width = '80%';
+                    
+                    // Create filename
+                    const now = new Date();
+                    const dateformat = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+                    const cleanContractNo = (contractNo || 'ContractNo').replace(/"/g, '').trim();
+                    const cleanRtuSerial = (rtuSerial || 'SerialNo').replace(/"/g, '').trim();
+                    const fileName = `${dateformat}_RTU_Backup_${cleanContractNo}_${cleanRtuSerial}.json`;
+                    
+                    // Create blob and download
+                    const blob = new Blob([jsonContent], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    
+                    // Complete
+                    statusElement.textContent = "JSON backup generated successfully!";
+                    progressBar.style.width = '100%';
+                    progressBar.style.backgroundColor = '#4CAF50';
+                    
+                    // Show file info
+                    jsonFileName.textContent = `File: ${fileName}`;
+                    jsonFileSize.textContent = `Size: ${(blob.size / 1024).toFixed(2)} KB`;
+                    jsonInfo.style.display = 'block';
+                    
+                    // Auto-hide info after 10 seconds
+                    setTimeout(() => {
+                        jsonInfo.style.display = 'none';
+                    }, 10000);
+                    
+                } else {
+                    throw new Error("JSON generation function not found");
+                }
+                
+            } catch (error) {
+                console.error("JSON generation failed:", error);
+                statusElement.textContent = "Generation failed: " + error.message;
+                progressBar.style.width = '100%';
+                progressBar.style.backgroundColor = '#f44336';
+                
+                alert("Failed to generate JSON: " + error.message);
+            } finally {
+                // Re-enable button
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Generate JSON Backup';
+                }
+            }
+        }
+        
+        // Expose function to global scope
+        window.startNewSession = startNewSession;
+        window.generateJsonFile = generateJsonFile;
+    </script>
+    
+    <style>
+        .json-generation-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .status-box {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            width: 0;
+            background-color: #2196F3;
+            border-radius: 4px;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .button-container {
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #generateJsonBtn {
+            background-color: #2196F3;
+        }
+        
+        #generateJsonBtn:hover {
+            background-color: #0b7dda;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</body>
+</html>
