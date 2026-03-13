@@ -224,20 +224,70 @@ function validateRequiredFields() {
             okCheckbox.parentElement.style.border = '1px solid red';
             isValid = false;
         } else {
-            // If checkbox is checked, also validate the revision and date fields
+            // If checkbox is checked, ONLY validate revision field (date is optional now)
             const revision = document.querySelector(`input[name="approvedDrawing_revision_${i}"]`);
-            const date = document.querySelector(`input[name="approvedDrawing_date_${i}"]`);
             
             if (revision && !revision.value) {
                 revision.style.borderColor = 'red';
                 isValid = false;
             }
-            if (date && !date.value) {
-                date.style.borderColor = 'red';
-                isValid = false;
-            }
+            // Date validation removed - date field is now optional
         }
     }
+
+    // PANEL IP CERTIFICATE VALIDATION - COMMENTED OUT
+    /*
+    // Validate Panel IP Certificate - At least one must be selected
+    const panelIPRadios = document.querySelectorAll('input[name="panelIPCertificate_applicable"]');
+    let panelIPSelected = false;
+    
+    panelIPRadios.forEach(radio => {
+        if (radio.checked) {
+            panelIPSelected = true;
+        }
+    });
+    
+    if (!panelIPSelected) {
+        // Highlight all radio buttons or their container to indicate error
+        const panelIPContainer = document.querySelector('.Panel-IP-Certificate');
+        // Also highlight each radio button
+        panelIPRadios.forEach(radio => {
+            radio.parentElement.style.border = '1px solid red';
+            radio.parentElement.style.padding = '2px';
+        });
+        isValid = false;
+    } else {
+        // Remove error styling if valid
+        const panelIPContainer = document.querySelector('.Panel-IP-Certificate');
+        if (panelIPContainer) {
+            panelIPContainer.style.border = '';
+            panelIPContainer.style.padding = '';
+        }
+        panelIPRadios.forEach(radio => {
+            radio.parentElement.style.border = '';
+            radio.parentElement.style.padding = '';
+        });
+    }
+    */
+
+    // SOFTWARE RECORD VALIDATION - COMMENTED OUT
+    /*
+    // Validate Software Record - both must be OK
+    const softwareOk1 = document.querySelector('input[name="software_ok_1"]');
+    const softwareOk2 = document.querySelector('input[name="software_ok_2"]');
+    
+    if (softwareOk1 && softwareOk2) {
+        if (!softwareOk1.checked || !softwareOk2.checked) {
+            if (!softwareOk1.checked) softwareOk1.parentElement.style.border = '1px solid red';
+            if (!softwareOk2.checked) softwareOk2.parentElement.style.border = '1px solid red';
+            isValid = false;
+        } else {
+            document.querySelectorAll('input[name^="software_ok_"]').forEach(el => {
+                el.parentElement.style.border = '';
+            });
+        }
+    }
+    */
 
     return isValid;
 }
