@@ -75,7 +75,7 @@
             }*/
             saveCurrentUserDetails(); // Save details before proceeding
 
-            // Navigate to the next page (e.g., rtuInfo.html)
+           
             navigationGuard.markPageAsCompleted();
-            window.location.href ='signature.html';
+            window.location.href ='generatePDF.html';
         }
