@@ -53,16 +53,15 @@ function goToBack() {
 }
 
 function goToBQPage() {
-    const rtuSerialInput = document.getElementById("rtuSerial");
     const contractNoInput = document.getElementById("contractNo");
     const projectNameInput = document.getElementById("projectName");
 
-    const rtuSerial = rtuSerialInput ? rtuSerialInput.value.trim() : "";
     const contractNo = contractNoInput ? contractNoInput.value.trim() : "";
     const projectName = projectNameInput ? projectNameInput.value.trim() : "";
 
-    if (!rtuSerial || !contractNo || !projectName) {
-        showCustomAlert("Please fill in all fields (RTU Serial No., Contract No., and Project Name)");
+    // Only validate Contract No. and Project Name - RTU Serial is optional now
+    if (!contractNo || !projectName) {
+        showCustomAlert("Please fill in all fields (Contract No. and Project Name)");
         return;
     }
     saveCurrentRTUDetails();
