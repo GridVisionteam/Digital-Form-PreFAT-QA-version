@@ -106,7 +106,7 @@
                 const contractNo = localStorage.getItem('session_contractNo');
                 const rtuSerial = localStorage.getItem('session_rtuSerial');
                 
-                if (!contractNo || !rtuSerial) {
+                if (!contractNo) {
                     throw new Error("Missing session data. Please complete the session first.");
                 }
                 
@@ -126,7 +126,7 @@
                     const now = new Date();
                     const dateformat = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
                     const cleanContractNo = (contractNo || 'ContractNo').replace(/"/g, '').trim();
-                    const cleanRtuSerial = (rtuSerial || 'SerialNo').replace(/"/g, '').trim();
+                    const cleanRtuSerial = (rtuSerial || 'Template').replace(/"/g, '').trim();
                     const fileName = `${dateformat}_RTU_Backup_${cleanContractNo}_${cleanRtuSerial}.json`;
                     
                     // Create blob and download

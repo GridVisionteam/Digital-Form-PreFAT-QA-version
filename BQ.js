@@ -985,10 +985,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCustomAlert("Please enter module quantities and generate sheets before submitting.");
                 return;
             }
-            if (!userData || !userData.rtuSerial) {
-                showCustomAlert("User data is missing. Cannot generate report. Please log in again.");
-                return;
-            }
             if (!sheetsContainer || sheetsContainer.children.length === 0) {
                 showCustomAlert("Please click 'Generate Sheets' first to create the forms for your modules.");
                 return;
