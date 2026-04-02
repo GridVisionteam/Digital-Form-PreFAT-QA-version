@@ -45,6 +45,7 @@
         
         <div style="margin-top: 20px; text-align: center;">
             <button onclick="SelectAll()">Select All</button>
+            <button onclick="clearSelection()">Clear Selection</button>
             <button onclick="clearAll()">Clear All</button>
         </div>
         
@@ -79,6 +80,7 @@
         
         <div style="margin-top: 20px; text-align: center;">
             <button onclick="SelectAllDO8()">Select All</button>
+            <button onclick="clearSelectionDO8()">Clear Selection</button>
             <button onclick="clearAllDO8()">Clear All</button>
         </div>
         
@@ -102,8 +104,6 @@
             if (event.key === 'd' || event.key === 'D' || event.keyCode === 68 || event.keyCode === 100) {
                 event.preventDefault();
                 
-            
-                
                 // Check which page is currently visible and call appropriate function
                 const functionalityDOPage = document.getElementById('functionalityDOPage');
                 const do8Page = document.getElementById('do8Page');
@@ -120,15 +120,13 @@
             else if (event.key === 'a' || event.key === 'A' || event.keyCode === 65 || event.keyCode === 97) {
                 event.preventDefault();
                 
-            
-                
-                
                 goToPreviousPage();
             }
         }
     });
     </script>
     
+    <!-- PRESERVED ORIGINAL PASTE FUNCTIONALITY -->
     <script>
     document.addEventListener('paste', function (event) {
         // Check if the target is an input field inside any of our data tables

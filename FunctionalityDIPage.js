@@ -402,6 +402,24 @@ function clearAll() {
     updateSubmitButtonState();
 }
 
+function clearSelection() {
+    const checkboxes = document.querySelectorAll("#tableBody input[type='checkbox']");
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateSubmitButtonState();
+}
+
+// Add to FunctionalityDIPage.js - Clear only checkboxes for DI-16 page
+function clearSelectionDI16() {
+    const checkboxes = document.querySelectorAll("#di16TableBody input[type='checkbox']");
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateDI16SubmitButtonState();
+}
+
+
 function updateSubmitButtonState() {
     const submitBtn = document.getElementById('submitBtn');
     if (!submitBtn) return;

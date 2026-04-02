@@ -250,6 +250,23 @@ function clearAll() {
     updateSubmitButtonState();
 }
 
+function clearSelection() {
+    const checkboxes = document.querySelectorAll("#tableBody input[type='checkbox']");
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateSubmitButtonState();
+}
+
+// Clear only checkboxes for DO-8 page (CO-8-A)
+function clearSelectionDO8() {
+    const checkboxes = document.querySelectorAll("#do8TableBody input[type='checkbox']");
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateDO8SubmitButtonState();
+}
+
 function updateSubmitButtonState() {
     const submitBtn = document.getElementById('submitBtn');
     if (!submitBtn) return;

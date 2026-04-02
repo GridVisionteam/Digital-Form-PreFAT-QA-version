@@ -35,8 +35,8 @@
        <th rowspan="4" style="text-align: center;">Point No.</th>
        <th colspan="7" style="text-align: center;">Test</th>
        <th rowspan="3" colspan="3" style="text-align: center;">IOA/Index</th>
-      </tr>
-      <tr>
+       </tr>
+       <tr>
        <th style="text-align: center;">Current</th>
        <th style="text-align: center;">0mA</th>
        <th style="text-align: center;">4mA</th>
@@ -44,8 +44,8 @@
        <th style="text-align: center;">12mA</th>
        <th style="text-align: center;">16mA</th>
        <th style="text-align: center;">20mA</th>
-      </tr>
-      <tr>
+       </tr>
+       <tr>
        <th style="text-align: center;">Raw</th>
        <th style="text-align: center;">-2490 — -2510</th>
        <th style="text-align: center;">-10 — 10</th>
@@ -53,8 +53,8 @@
        <th style="text-align: center;">4990 — 5010</th>
        <th style="text-align: center;">7940 — 7510</th>
        <th style="text-align: center;">9990 — 10010</th>
-      </tr>
-      <tr>
+       </tr>
+       <tr>
        <th style="text-align: center;">Report</th>
        <th style="text-align: center;">-8158 — -8225</th>
        <th style="text-align: center;">-33 — 33</th>
@@ -65,14 +65,16 @@
        <th style="text-align: center;">IEC101</th>
        <th style="text-align: center;">IEC104</th>
        <th style="text-align: center;">DNP3</th>
-      </tr>
+       </tr>
     </thead>
     <tbody id="tableBody">
         </tbody>
     </table>
 
+    <!-- Updated button group with Clear Selection button -->
     <div style="margin-top: 20px; text-align: center;">
      <button onclick="selectAllFunctionality()">Select All (OK)</button>
+     <button onclick="clearSelectionAI()">Clear Selection</button>
      <button onclick="clearAllFunctionality()">Clear All</button>
     </div>
     
@@ -112,6 +114,15 @@
         checkboxes.forEach(cb => {
             cb.checked = false;
             cb.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+    
+    function clearSelectionAI() {
+        // Clear only checkboxes in the main table
+        const checkboxes = document.querySelectorAll('#tableBody input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
         });
     }
 </script>
