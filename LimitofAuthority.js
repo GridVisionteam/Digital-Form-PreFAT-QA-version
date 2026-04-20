@@ -189,7 +189,7 @@ function handleLimitofAuthoritySubmission() {
     // Save the current settings
     saveAuthorityData();
     navigationGuard.markPageAsCompleted();
-    window.location.href = 'userdetail.html';
+    window.location.href = 'generatePDF.html';
 }
 
 // Function to select all checkboxes
