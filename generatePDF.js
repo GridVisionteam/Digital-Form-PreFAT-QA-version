@@ -1,4 +1,4 @@
-// generateJSON.js - This file handles JSON generation only
+// generatePDF.js - This file handles JSON generation (same logic as generateJSON.js)
 
 // Main function to generate JSON from localStorage
 function generateJsonFromLocalStorage() {
@@ -12,7 +12,8 @@ function generateJsonFromLocalStorage() {
         'session_name', 'session_experience', 'session_rtuSerial',
         'session_contractNo', 'session_projectName', 'session_subrackCount',
         'session_processorCount', 'session_comCount', 'session_diModulesToTest',
-        'session_doModulesToTest', 'session_aiModulesToTest', 'session_powerCount'
+        'session_doModulesToTest', 'session_aiModulesToTest', 'session_powerCount',
+        'session_Batch_No'
     ];
     
     sessionKeys.forEach(key => {
@@ -34,7 +35,7 @@ function generateJsonFromLocalStorage() {
             try {
                 allData[key] = JSON.parse(value);
             } catch (e) {
-                allData[key] = value; // Store as string if not valid JSON
+                allData[key] = value;
             }
         }
     });
@@ -68,28 +69,36 @@ function generateJsonFromLocalStorage() {
     allData.metadata = {
         generatedAt: new Date().toISOString(),
         version: "1.0",
-        dataSource: "RTU FAT Test System"
+        dataSource: "RTU FAT Test System",
+        contractNo: localStorage.getItem('session_contractNo') || 'N/A',
+        Batch_No: localStorage.getItem('session_Batch_No') || 'N/A',
+        rtuSerial: localStorage.getItem('session_rtuSerial') || 'N/A'
     };
     
-    // Convert to pretty-printed JSON
-    const jsonContent = JSON.stringify(allData, null, 2);
-    
-    return jsonContent;
+    return JSON.stringify(allData, null, 2);
 }
+
+// Filename helper — "Contract(Bbatch)" with NO space before "("
+function buildContractWithBatch() {
+    const rawContract = localStorage.getItem('session_contractNo') || 'ContractNo';
+    const rawBatch = localStorage.getItem('session_Batch_No') || 'BatchNo';
+    const cleanContract = String(rawContract).replace(/"/g, '').replace(/[\s\u00A0]+$/g, '').trim() || 'ContractNo';
+    const cleanBatch = String(rawBatch).replace(/"/g, '').trim() || 'BatchNo';
+    return `${cleanContract}(B${cleanBatch})`;
+}
+window.buildContractWithBatch = buildContractWithBatch;
 
 // Function to trigger JSON download
 function generateJsonFile() {
     try {
         const jsonContent = generateJsonFromLocalStorage();
         
-        // Create filename
+        // Create filename with batch in "()"
         const now = new Date();
         const dateformat = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-        const contractNo = localStorage.getItem('session_contractNo') || 'ContractNo';
-        const rtuSerial = localStorage.getItem('session_rtuSerial') || 'SerialNo';
-        const cleanContractNo = contractNo.replace(/"/g, '').trim();
-        const cleanRtuSerial = rtuSerial.replace(/"/g, '').trim();
-        const fileName = `${dateformat}_RTU_Backup_${cleanContractNo}_${cleanRtuSerial}.json`;
+        const contractWithBatch = buildContractWithBatch();
+        const rtuSerial = (localStorage.getItem('session_rtuSerial') || 'SerialNo').replace(/"/g, '').trim() || 'SerialNo';
+        const fileName = `${dateformat}_RTU_Backup_${contractWithBatch}_${rtuSerial}.json`;
         
         // Create and download file
         const blob = new Blob([jsonContent], { type: 'application/json' });
@@ -119,7 +128,8 @@ function loadUserData() {
         experience: localStorage.getItem('session_experience') || 'N/A',
         rtuSerial: localStorage.getItem('session_rtuSerial') || 'N/A',
         contractNo: localStorage.getItem('session_contractNo') || 'N/A',
-        projectName: localStorage.getItem('session_projectName') || 'N/A'
+        projectName: localStorage.getItem('session_projectName') || 'N/A',
+        batchNo: localStorage.getItem('session_Batch_No') || 'N/A'
     };
 }
 

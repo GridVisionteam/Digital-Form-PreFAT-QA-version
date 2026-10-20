@@ -52,11 +52,24 @@ function generateJsonFromLocalStorage() {
         generationDate: new Date().toISOString(),
         rtuSerial: localStorage.getItem('session_rtuSerial') || 'N/A',
         contractNo: localStorage.getItem('session_contractNo') || 'N/A',
+        Batch_No: localStorage.getItem('session_Batch_No') || 'N/A',
         testerName: localStorage.getItem('session_name') || 'N/A'
     };
     
     return JSON.stringify(allData, null, 2);
 }
+
+// ------------------------------------------------------------
+// Filename helper — "Contract(Bbatch)" with NO space before "("
+// ------------------------------------------------------------
+function buildContractWithBatch() {
+    const rawContract = localStorage.getItem('session_contractNo') || 'ContractNo';
+    const rawBatch = localStorage.getItem('session_Batch_No') || 'BatchNo';
+    const cleanContract = String(rawContract).replace(/"/g, '').replace(/[\s\u00A0]+$/g, '').trim() || 'ContractNo';
+    const cleanBatch = String(rawBatch).replace(/"/g, '').trim() || 'BatchNo';
+    return `${cleanContract}(B${cleanBatch})`;
+}
+window.buildContractWithBatch = buildContractWithBatch;
 
 /**
  * Triggers download of JSON backup file
@@ -76,7 +89,9 @@ function generateJsonFile() {
         a.href = url;
         const now = new Date();
         const dateformat = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-        a.download = `${dateformat}_RTU_Backup_${localStorage.getItem('session_contractNo') || 'ContractNo'}_${localStorage.getItem('session_rtuSerial') || 'Template'}.json`;
+        const contractWithBatch = buildContractWithBatch();
+        const rtuSerial = (localStorage.getItem('session_rtuSerial') || 'Template').replace(/"/g, '').trim() || 'Template';
+        a.download = `${dateformat}_RTU_Backup_${contractWithBatch}_${rtuSerial}.json`;
         document.body.appendChild(a);
         a.click();
         
